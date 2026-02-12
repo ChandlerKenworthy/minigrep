@@ -1,17 +1,16 @@
-pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
-    contents
-        .lines()
-        .filter(|line| line.contains(query))
-        .collect()
-}
-
-pub fn search_case_insensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
-    let query = query.to_lowercase();
+pub fn search<'a>(query: &'a str, contents: &'a str, ignore_case: bool) 
+-> impl Iterator<Item = &'a str> {
+    let query_lower = query.to_lowercase();
 
     contents
         .lines()
-        .filter(|line| line.to_lowercase().contains(&query))
-        .collect()
+        .filter(move |line| {
+            if ignore_case {
+                line.to_lowercase().contains(&query_lower)
+            } else {
+                line.contains(query)
+            }
+        })
 }
 
 #[cfg(test)]
@@ -27,7 +26,9 @@ safe, fast, productive.
 Pick three.
 Duct tape.";
 
-        assert_eq!(vec!["safe, fast, productive."], search(query, contents));
+        let results: Vec<_> =  search(query, contents, false).collect();
+
+        assert_eq!(vec!["safe, fast, productive."], results);
     }
 
     #[test]
@@ -38,6 +39,9 @@ Rust:
 safe, fast, productive.
 Pick three.
 Trust me.";
-        assert_eq!(vec!["Rust:", "Trust me."], search_case_insensitive(query, contents));
+
+        let results: Vec<_> = search(query, contents, true).collect();
+
+        assert_eq!(vec!["Rust:", "Trust me."], results);
     }
 }

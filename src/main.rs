@@ -2,7 +2,7 @@ use std::env;
 use std::fs;
 use std::process;
 use std::error::Error;
-use minigrep::{search, search_case_insensitive};
+use minigrep::search;
 
 fn main() {
     let config = Config::build(env::args()).unwrap_or_else(|err| {
@@ -19,11 +19,11 @@ fn main() {
 fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let contents = fs::read_to_string(config.file_path)?;
 
-    let results = if config.ignore_case {
-        search_case_insensitive(&config.query, &contents)
-    } else {
-        search(&config.query, &contents)
-    };
+    let results = search(
+        &config.query,
+        &contents,
+        config.ignore_case,
+    );
 
     for line in results {
         println!("{line}");
