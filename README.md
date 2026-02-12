@@ -1,0 +1,1 @@
+This is a very small project designed to help me learn Rust. It implements a basic CL tool for searching for a specific string with a given file, and printing matching lines - a little like grep. This is based off of the Rust book (https://doc.rust-lang.org/book/ch12-00-an-io-project.html).
